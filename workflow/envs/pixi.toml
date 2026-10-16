@@ -1,17 +1,129 @@
 [workspace]
 name = "dnase-smk-envs"
-channels = ["conda-forge"]
+channels = ["conda-forge", "bioconda"]
 platforms = ["linux-64"]
 exclude-newer = "7d"
 
 [dependencies]
-python = "3.12.*"
-polars = ">=1.43"
+# The shell tools every rule calls, pinned instead of the host's. GNU, not uutils:
+# uutils shuf -n draws other lines from the same random source.
+coreutils = ">=9.12"
+gawk = ">=5.4.1"
+grep = ">=3.12"
+sed = ">=4.10"
+python = "3.13.*"
+bedops = ">=2.4.42"
+bedtools = ">=2.31.1"
+bwa-mem3 = ">=0.14"
+cutadapt = ">=5.2"
+htslib = ">=1.24"
+rapidgzip = ">=0.16"
+samtools = "1.24.*"
+ucsc-bedtobigbed = ">=482"
 matplotlib = ">=3.11"
+numpy = ">=2.5"
+polars = ">=2.0"
+pysam = ">=0.24.1"
 
 [pypi-dependencies]
-poikilos = { git = "https://github.com/ramirc0/poikilos", extras = ["labels"] }
+poikilos = { git = "https://github.com/ramirc0/poikilos" }
 
-# Rule jobs only save figures. Without this, a job that inherits DISPLAY picks a GUI backend.
 [activation.env]
+# Rule jobs only save figures. Without this, a job that inherits DISPLAY picks a GUI backend.
 MPLBACKEND = "Agg"
+# The image fixed its locale. Pinning one keeps sort order independent of the host.
+LC_ALL = "C"
+
+# hotspot3 pins numpy ==1.26.0, babachi ==3.0.0 and genome-tools ==2.0.0.
+# Every conda pybigwig for python 3.12 needs numpy >=1.26.4, so it comes from PyPI.
+# pixi maps no PyPI name to bioconda's pysam, so pysam comes from PyPI too.
+[feature.hotspot3.dependencies]
+coreutils = ">=9.12"
+gawk = ">=5.4.1"
+grep = ">=3.12"
+sed = ">=4.10"
+python = "3.12.*"
+numpy = "==1.26.0"
+bedops = ">=2.4.42"
+bottleneck = "*"
+fonttools = "==4.49.0"
+htslib = ">=1.24"
+mawk = "*"
+matplotlib = "*"
+networkx = "*"
+numba = "*"
+pandas = "*"
+pyarrow = "*"
+pywavelets = "*"
+samtools = "1.24.*"
+scikit-learn = "*"
+scipy = "*"
+seaborn = "*"
+shapely = "*"
+statsmodels = "*"
+ucsc-bedtobigbed = ">=482"
+
+[feature.hotspot3.pypi-dependencies]
+hotspot3 = "==1.0.1"
+pybigwig = "*"
+pysam = "*"
+
+[feature.hotspot3.activation.env]
+LC_ALL = "C"
+
+# footprint-tools master is past 1.3.7 with a learn_dm fix. It imports pkg_resources
+# (setuptools <82) and builds Cython against the env's numpy, so no build isolation.
+# genome-tools 1.0.4 on PyPI crashes on python >=3.10, and 2.x drops genomic_interval.
+[feature.footprints.dependencies]
+coreutils = ">=9.12"
+gawk = ">=5.4.1"
+grep = ">=3.12"
+sed = ">=4.10"
+python = "3.12.*"
+numpy = "<2"
+scipy = "<1.18"
+bedops = ">=2.4.42"
+c-compiler = "*"
+cython = "*"
+htslib = ">=1.24"
+matplotlib = "*"
+pandas = "*"
+pwlf = "*"
+pybigwig = "*"
+setuptools = "<82"
+shapely = "*"
+statsmodels = "*"
+ucsc-bedtobigbed = ">=482"
+
+[feature.footprints.pypi-dependencies]
+pysam = "*"
+genome-tools = { git = "https://github.com/vierstralab/genome-tools", rev = "f68cd8a88875c9b7beb51818bfb008fe20cb4b27" }
+footprint-tools = { git = "https://github.com/vierstralab/footprint-tools", rev = "e839b4e6d73dbd2cd0b2791b5f19fd2743ab147c" }
+
+[feature.footprints.activation.env]
+LC_ALL = "C"
+
+[feature.footprints.pypi-options]
+no-build-isolation = ["footprint-tools"]
+
+# preseq 3.2.0, the last release, has only builds that need libzlib <1.3.
+[feature.preseq.dependencies]
+coreutils = ">=9.12"
+gawk = ">=5.4.1"
+preseq = ">=3.2.0"
+
+[feature.preseq.activation.env]
+LC_ALL = "C"
+
+[feature.test.dependencies]
+filelock = "*"
+pybigwig = "*"
+pytest = "*"
+pytest-xdist = "*"
+seqkit = "*"
+
+[environments]
+hotspot3 = { features = ["hotspot3"], no-default-feature = true }
+footprints = { features = ["footprints"], no-default-feature = true }
+preseq = { features = ["preseq"], no-default-feature = true }
+test = { features = ["test"] }

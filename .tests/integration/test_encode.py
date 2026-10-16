@@ -16,6 +16,7 @@ from conftest import (
     encode,
     first_difference,
     lanes,
+    lines,
 )
 from filelock import FileLock
 
@@ -434,3 +435,92 @@ def test_nuclear(run, sample):
         )
         is None
     )
+
+
+@pytest.mark.parametrize("sample", SAMPLES)
+def test_bamcounts(run, sample):
+    """Our bamcounts.py writes the counts of stampipes' bamcounts.py."""
+    bam = run / f"{sample}/align/{sample}.unfiltered.bam"
+    out = encode(
+        f"bamcounts/{sample}",
+        [bam],
+        f"python3 $(which bamcounts.py) {bam.name} counts.txt",
+    )
+    ours = lines(run / f"{sample}/qc/{sample}.bamcounts.txt")
+    assert first_difference(ours, lines(out / "counts.txt")) is None
+
+
+@pytest.mark.parametrize("sample", SAMPLES)
+def test_dup_hist(run, sample):
+    """Our dup_hist.py writes the histogram of stampipes' mark_dups.py --hist."""
+    bam = run / f"{sample}/filter/{sample}.nuclear.bam"
+    out = encode(
+        f"dup_hist/{sample}",
+        [bam],
+        f"python3 $(which mark_dups.py) -i {bam.name} -o /dev/null --hist hist.txt",
+    )
+    ours = lines(run / f"{sample}/qc/{sample}.dup_hist.txt")
+    assert first_difference(ours, lines(out / "hist.txt")) is None
+
+
+@pytest.mark.parametrize("sample", SAMPLES)
+def test_preseq(run, sample):
+    """Our preseq 3.2 curve lies within 1% of preseq 2.0.3 to 10x the depth, and the targets match."""
+    qc = run / f"{sample}/qc"
+    hist, curve = qc / f"{sample}.dup_hist.txt", qc / f"{sample}.preseq.txt"
+    defects = "-defects" if sample == "RWU" else ""
+    out = encode(
+        f"preseq/{sample}",
+        [hist, curve],
+        f"preseq lc_extrap -hist {hist.name} -extrap 1.001e9 -step 1e6 {defects} > ours_v2.txt\n"
+        f"preseq_targets.sh {curve.name} targets.txt\n",
+    )
+
+    def distinct(path):
+        rows = (line.split() for line in lines(path)[1:])
+        return {float(r[0]): float(r[1]) for r in rows}
+
+    ours, theirs = distinct(curve), distinct(out / "ours_v2.txt")
+    reads = sum(int(n) * int(c) for n, c in (r.split() for r in lines(hist)))
+
+    def worst(depths):
+        return max(abs(ours[k] - theirs[k]) / theirs[k] for k in depths if theirs[k])
+
+    shared = ours.keys() & theirs.keys()
+    # The fixture is small, so the 1e9 curve extrapolates up to 1600x past it.
+    near = {k for k in shared if k <= 10 * reads}
+    print(
+        f"{sample}: {len(near)} depths up to 10x its {reads} reads, worst relative "
+        f"difference {worst(near):.5f}; {worst(shared):.5f} over all {len(shared)}"
+    )
+    assert len(near) > 1
+    assert worst(near) <= 0.01
+    ours_targets = lines(qc / f"{sample}.preseq_targets.txt")
+    assert first_difference(ours_targets, lines(out / "targets.txt")) is None
+
+
+def test_insert_sizes(run):
+    """Insert size metrics agree with Picard: median and mode within 2 bp, mean and SD within 1%."""
+    sample = "UHT"
+    bam = run / f"{sample}/filter/{sample}.nuclear.bam"
+    out = encode(
+        f"insert_sizes/{sample}",
+        [bam],
+        f"java -jar $(which picard.jar) CollectInsertSizeMetrics INPUT={bam.name} "
+        "OUTPUT=metrics.txt HISTOGRAM_FILE=hist.pdf VALIDATION_STRINGENCY=LENIENT "
+        "ASSUME_SORTED=true\n"
+        "awk '/^insert_size/ {f = 1; next} f && NF == 2' metrics.txt > hist.txt\n"
+        "python3 $(which picard_inserts_process.py) hist.txt > info.txt\n",
+    )
+    rows = lines(run / f"{sample}/qc/{sample}.insert_sizes.tsv")[1:]
+    ours = {k: float(v) for k, v in (r.split("\t") for r in rows)}
+    picard = picard_metrics(out / "metrics.txt")
+    theirs = {k: float(picard[k]) for k in ours if picard.get(k)}
+    theirs |= {k: float(v) for k, v in (r.split("\t") for r in lines(out / "info.txt"))}
+    hist = [r.split() for r in lines(out / "hist.txt")]
+    theirs["MODE_INSERT_SIZE"] = float(max(hist, key=lambda r: int(r[1]))[0])
+    print({k: (ours[k], theirs.get(k)) for k in ours})
+    for k in ("MEDIAN_INSERT_SIZE", "MODE_INSERT_SIZE"):
+        assert abs(ours[k] - theirs[k]) <= 2
+    for k in ("MEAN_INSERT_SIZE", "STANDARD_DEVIATION"):
+        assert abs(ours[k] - theirs[k]) <= 0.01 * theirs[k]

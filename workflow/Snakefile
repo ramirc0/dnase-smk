@@ -3,8 +3,31 @@ include: "rules/common.smk"
 include: "rules/reference.smk"
 include: "rules/align.smk"
 include: "rules/filter.smk"
+include: "rules/qc.smk"
+
+
+def qc_files(sample):
+    """Return the QC files of a sample.
+
+    Parameters
+    ----------
+    sample : str
+        Sample ID from the sheet.
+
+    Returns
+    -------
+    list of str
+        BAM stats and flagstats, bamcounts and preseq targets, plus insert
+        sizes for paired-end-only samples.
+    """
+    qc = prefix(sample, "qc")
+    files = [f"{qc}.{bam}.{ext}" for bam in BAMS for ext in ("stats.txt", "flagstat.json")]
+    files += [f"{qc}.bamcounts.txt", f"{qc}.preseq_targets.txt"]
+    if sample in PAIRED_ONLY:
+        files += [f"{qc}.insert_sizes.tsv", f"{qc}.insert_sizes.svg"]
+    return files
 
 
 rule all:
     input:
-        [f"{prefix(s, 'filter')}.nuclear.bam" for s in SAMPLES],
+        [qc_files(s) for s in SAMPLES],

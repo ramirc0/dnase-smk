@@ -22,6 +22,8 @@ set-threads:                # single-threaded rules get the default, 1
   bwa_mem3_index: 32
   align: 32
   filter: 16
+  bam_qc: 4
+  insert_sizes: 4
 
 set-resources:              # tune from benchmarks/ TSVs after a real run
   align: {mem_mb: 32000}

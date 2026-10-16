@@ -49,7 +49,7 @@ if not _SHEET.exists():
     raise WorkflowError(
         f"Sample sheet not found: {_SHEET}\n"
         "Columns: sample_id, r1, [r2], [adapter_r1], [adapter_r2], [read_length], "
-        "[preseq_defects]; see config/samples.example.tsv."
+        "[preseq_defects], [footprints]; see config/samples.example.tsv."
     )
 
 
@@ -70,7 +70,7 @@ def _fail(message):
 
 
 # All-string read; optional columns default to "".
-_OPTIONAL = ("r2", "adapter_r1", "adapter_r2", "read_length", "preseq_defects")
+_OPTIONAL = ("r2", "adapter_r1", "adapter_r2", "read_length", "preseq_defects", "footprints")
 _sheet = pl.read_csv(_SHEET, separator="\t", infer_schema_length=0, comment_prefix="#")
 _missing = {"sample_id", "r1"} - set(_sheet.columns)
 if _missing:
@@ -81,7 +81,7 @@ _sheet = _sheet.with_columns(
 if _sheet.is_empty():
     _fail("no rows")
 
-SAMPLES = {}  # sample -> {"read_length", "defects", "adapters"}
+SAMPLES = {}  # sample -> {"read_length", "defects", "footprints", "adapters"}
 LANES = {}  # (sample, layout) -> {"r1", "r2"}
 for row in _sheet.iter_rows(named=True):
     sample = row["sample_id"]
@@ -94,16 +94,18 @@ for row in _sheet.iter_rows(named=True):
             _fail(f"{sample}: {fastq} must be gzipped (.gz)")
     if not re.fullmatch(r"([1-9][0-9]*)?", row["read_length"]):
         _fail(f"{sample}: read_length must be a positive integer")
-    if row["preseq_defects"] not in ("", "true", "false"):
-        _fail(f"{sample}: preseq_defects must be true or false")
+    for column in ("preseq_defects", "footprints"):
+        if row[column] not in ("", "true", "false"):
+            _fail(f"{sample}: {column} must be true or false")
     layout = "pe" if row["r2"] else "se"
     attributes = {
         "read_length": int(row["read_length"] or 0),
         "defects": row["preseq_defects"] == "true",
+        "footprints": row["footprints"] != "false",
     }
     s = SAMPLES.setdefault(sample, {**attributes, "adapters": None})
     if {k: s[k] for k in attributes} != attributes:
-        _fail(f"{sample}: rows disagree on read_length or preseq_defects")
+        _fail(f"{sample}: rows disagree on read_length, preseq_defects or footprints")
     if layout == "pe":
         adapters = (row["adapter_r1"], row["adapter_r2"])
         if not all(re.fullmatch(r"[ACGTN]+", a) for a in adapters):

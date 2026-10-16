@@ -608,3 +608,31 @@ def test_hotspot3(run, tmp_path, sample):
         f"{sample}: FDR 0.001 peaks {peaks[0]} of {peaks[1]}, FDR 0.05 hotspots {hotspots[0]} of {hotspots[1]}"
     )
     assert peaks[0] >= 0.9 * peaks[1]
+
+
+def test_footprint_thresholds(run):
+    """Thresholding our bedgraph gives ENCODE's footprints, less the # line its awk passes."""
+    sample = "IEA"
+    bedgraph = run / f"{sample}/footprints/{sample}.interval.all.bedgraph"
+    command = "".join(
+        f"awk -v OFS='\\t' -v threshold={t} -v window=3 "
+        "'$8 <= threshold {print $1, $2 - window, $3 + window;}' "
+        f"{bedgraph.name} | sort-bed - | bedops --merge - > fps.{t}.bed\n"
+        for t in ("0.01", "0.001")
+    )
+    out = encode(f"footprints/{sample}", [bedgraph], command)
+    for t in ("0.01", "0.001"):
+        ours = lines(run / f"{sample}/footprints/{sample}.footprints.fdr{t}.bed.gz")
+        theirs = [r for r in lines(out / f"fps.{t}.bed") if not r.startswith("#")]
+        assert first_difference(ours, theirs) is None
+
+
+def test_footprints(run, tmp_path):
+    """Report how many of ENCODE's 2025 chr22 footprints overlap ours."""
+    sample = "IEA"
+    for t in ("0.01", "0.001"):
+        ours = run / f"{sample}/footprints/{sample}.footprints.fdr{t}.bed.gz"
+        hits, total = overlap(ours, sample, f"footprints.fdr{t}", tmp_path)
+        print(
+            f"{sample}: FDR {t} footprints {hits} of {total}, ours {len(lines(ours))}"
+        )

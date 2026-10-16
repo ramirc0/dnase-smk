@@ -17,23 +17,21 @@ slurm-efficiency-threshold: 0.8
 slurm-init-seconds-before-status-checks: 10
 
 default-resources:
-  slurm_account: youraccount
-  slurm_partition: 12hours
-  runtime: 60m
-  mem_mb: 4000
-  # slurm_extra: "--exclude=node1,node2"   # e.g. nodes missing a shared mount
+  slurm_partition: 4hours
+  runtime: 240m
+  mem_mb: 4000 * attempt
+  # bwa-mem3 needs AVX2.
+  constraint: cascadelake
 
-set-threads:
-  prepare: 1
-  analyze: 4
+set-threads:              # single-threaded rules get the default, 1
+  mappable_bases: 4
+  bwa_mem3_index: 32
 
 set-resources:              # tune from benchmarks/ TSVs after a real run
-  prepare:
-    mem_mb: 2000 * attempt
-    runtime: 30m
-  analyze:
-    mem_mb: 8000 * attempt
-    runtime: 120m
+  bwa_mem3_index:
+    slurm_partition: 12hours
+    mem_mb: 96000 * attempt
+    runtime: 720m
 
   # GPU rule pattern (uncomment + adapt for a CUDA rule):
   #  fit:

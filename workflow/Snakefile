@@ -1,11 +1,10 @@
 
 include: "rules/common.smk"
-include: "rules/preprocess.smk"
-include: "rules/analyze.smk"
-include: "rules/report.smk"
+include: "rules/reference.smk"
 
 
 rule all:
     input:
-        f"{OUTDIR}/report/summary.svg",
-        [f"{prefix(s)}.curve.svg" for s in SAMPLES],
+        rules.reference.output,
+        rules.mappable_bases.output,
+        rules.bwa_mem3_index.output,

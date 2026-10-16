@@ -2,13 +2,16 @@ samples: config/samples.tsv
 outdir: results
 pixi_env: default
 run_id: default          # outputs go under results/<run_id>/; override per run
+tmp_dir: .tmp            # per-job scratch; the login node's /tmp may be small
 
 references:
-  reference: resources/reference.txt
-
-analyze:
-  window: 100
-  threshold: 0.5
-  metric: mean
-  normalize: true
-  random_state: null
+  # GRCh38_no_alt_analysis_set_GCA_000001405.15, ENCODE's GRCh38 FASTA
+  fasta: resources/GRCh38_no_alt_analysis_set_GCA_000001405.15.fasta
+  # Contigs kept in the nuclear BAM and passed to hotspot3; those missing from the FASTA are skipped
+  nuclear_chroms: [chr1, chr2, chr3, chr4, chr5, chr6, chr7, chr8, chr9, chr10, chr11, chr12,
+                   chr13, chr14, chr15, chr16, chr17, chr18, chr19, chr20, chr21, chr22, chrX, chrY]
+  # Altius K36 mappable bases minus the extended blacklist, from hotspot3's README:
+  # https://resources.altius.org/~sabramov/files/hotspot3/GRCh38_no_alts.K36.n150.center_sites_and_extended_blacklist.bed.gz
+  mappable_bases: resources/GRCh38_no_alts.K36.n150.center_sites_and_extended_blacklist.bed.gz
+  # footprint-tools data/vierstra_et_al.6mer-model.txt, ENCODE's bias model
+  bias_model: resources/vierstra_et_al.6mer-model.txt

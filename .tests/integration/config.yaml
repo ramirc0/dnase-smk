@@ -1,0 +1,12 @@
+samples: .tests/integration/samples.tsv
+outdir: results-fixture  # own refs/, so the chr22 index never replaces the GRCh38 one
+pixi_env: default
+run_id: fixture
+tmp_dir: .tmp            # per-job scratch; the login node's /tmp may be small
+
+references:
+  fasta: resources/fixture/genome.fa
+  nuclear_chroms: [chr1, chr2, chr3, chr4, chr5, chr6, chr7, chr8, chr9, chr10, chr11, chr12,
+                   chr13, chr14, chr15, chr16, chr17, chr18, chr19, chr20, chr21, chr22, chrX, chrY]
+  mappable_bases: resources/fixture/mappable_bases.bed.gz
+  bias_model: resources/fixture/vierstra_et_al.6mer-model.txt

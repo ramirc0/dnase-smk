@@ -5,7 +5,7 @@ software-deployment-method:
 # One copy per user instead of one per workdir.
 software-deployment-cache-prefix: ~/.cache/snakemake/software
 
-cores: 16
+cores: 32
 printshellcmds: true
 rerun-incomplete: true
 keep-going: true
@@ -14,12 +14,12 @@ retries: 1
 benchmark-extended: true
 
 default-resources:          # fallback for trivial rules
-  mem_mb: 2000
-  runtime: 30
+  mem_mb: 4000
+  runtime: 240
 
-set-threads:
-  analyze: 4
+set-threads:                # single-threaded rules get the default, 1
+  mappable_bases: 4
+  bwa_mem3_index: 32
 
 set-resources:              # tune from benchmarks/ TSVs after a real run
-  prepare: {mem_mb: 2000}
-  analyze: {mem_mb: 8000}
+  bwa_mem3_index: {mem_mb: 96000}

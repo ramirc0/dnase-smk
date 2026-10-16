@@ -110,7 +110,7 @@ def run():
 
 
 def encode(task, inputs, command):
-    """Run commands in ENCODE's v3.0.0 image, unless its inputs are older.
+    """Run commands in ENCODE's v3.0.0 image, unless a past run of them is newer than its inputs.
 
     Parameters
     ----------
@@ -131,8 +131,10 @@ def encode(task, inputs, command):
     stamp = out / ".done"
     out.parent.mkdir(parents=True, exist_ok=True)
     with FileLock(f"{out}.lock"):
-        if stamp.exists() and all(
-            p.stat().st_mtime < stamp.stat().st_mtime for p in inputs
+        if (
+            stamp.exists()
+            and stamp.read_text() == command
+            and all(p.stat().st_mtime < stamp.stat().st_mtime for p in inputs)
         ):
             return out
         if not SIF.exists():
@@ -157,7 +159,7 @@ def encode(task, inputs, command):
             cwd=out,
             check=True,
         )
-        stamp.touch()
+        stamp.write_text(command)
     return out
 
 

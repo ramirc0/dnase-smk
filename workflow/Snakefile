@@ -4,6 +4,7 @@ include: "rules/reference.smk"
 include: "rules/align.smk"
 include: "rules/filter.smk"
 include: "rules/qc.smk"
+include: "rules/peaks.smk"
 
 
 def qc_files(sample):
@@ -31,3 +32,4 @@ def qc_files(sample):
 rule all:
     input:
         [qc_files(s) for s in SAMPLES],
+        [hotspot3_calls(s) for s in SAMPLES],

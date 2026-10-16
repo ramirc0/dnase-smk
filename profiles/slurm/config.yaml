@@ -30,6 +30,7 @@ set-threads:              # single-threaded rules get the default, 1
   filter: 16
   bam_qc: 4
   insert_sizes: 4
+  hotspot3: 6
 
 set-resources:              # tune from benchmarks/ TSVs after a real run
   align:
@@ -43,6 +44,10 @@ set-resources:              # tune from benchmarks/ TSVs after a real run
   filter:
     slurm_partition: 12hours
     mem_mb: 32000 * attempt
+    runtime: 720m
+  hotspot3:
+    slurm_partition: 12hours
+    mem_mb: 96000 * attempt
     runtime: 720m
 
   # GPU rule pattern (uncomment + adapt for a CUDA rule):

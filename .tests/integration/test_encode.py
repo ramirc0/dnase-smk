@@ -3,6 +3,7 @@
 import itertools
 import json
 import subprocess
+from pathlib import Path
 
 import pysam
 import pytest
@@ -524,3 +525,86 @@ def test_insert_sizes(run):
         assert abs(ours[k] - theirs[k]) <= 2
     for k in ("MEAN_INSERT_SIZE", "STANDARD_DEVIATION"):
         assert abs(ours[k] - theirs[k]) <= 0.01 * theirs[k]
+
+
+# ENCODE pipeline ENCPL336PGV's files of each fixture replicate, in the Weng Lab mirror.
+ENCODE_2025 = {
+    "UHT": {
+        "experiment": "ENCSR693UHT",
+        "peaks.fdr0.001": "ENCFF116FRB",
+        "hotspots.fdr0.05": "ENCFF553ZVW",
+        "footprints.fdr0.01": "ENCFF845KSE",
+        "footprints.fdr0.001": "ENCFF478LTM",
+    },
+    "IEA": {
+        "experiment": "ENCSR426IEA",
+        "peaks.fdr0.001": "ENCFF176PEH",
+        "hotspots.fdr0.05": "ENCFF856ZDV",
+        "footprints.fdr0.01": "ENCFF568GRM",
+        "footprints.fdr0.001": "ENCFF233PFY",
+    },
+    "RWU": {
+        "experiment": "ENCSR420RWU",
+        "peaks.fdr0.001": "ENCFF921RUU",
+        "hotspots.fdr0.05": "ENCFF390JSJ",
+    },
+}
+MIRROR = Path("/data/projects/encode/data")
+
+
+def overlap(ours, sample, kind, tmp_path):
+    """Count ENCODE's 2025 chr22 intervals of one kind that overlap ours.
+
+    Parameters
+    ----------
+    ours : pathlib.Path
+        Our BED, gzipped or not.
+    sample : str
+        Fixture sample.
+    kind : str
+        Key of `ENCODE_2025`, such as ``peaks.fdr0.001``.
+    tmp_path : pathlib.Path
+        Scratch directory.
+
+    Returns
+    -------
+    tuple of int
+        ENCODE's chr22 intervals that overlap ours, and all of them.
+    """
+    files = ENCODE_2025[sample]
+    theirs = MIRROR / files["experiment"] / f"{files[kind]}.bed.gz"
+    if not theirs.exists():
+        pytest.skip(f"ENCODE file missing: {theirs}")
+    chr22 = tmp_path / f"{kind}.bed"
+    chr22.write_text(
+        "".join(f"{r}\n" for r in lines(theirs) if r.startswith("chr22\t"))
+    )
+    hits = subprocess.run(
+        ["bedtools", "intersect", "-u", "-a", str(chr22), "-b", str(ours)],
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout.count("\n")
+    return hits, len(lines(chr22))
+
+
+@pytest.mark.parametrize("sample", SAMPLES)
+def test_hotspot3(run, tmp_path, sample):
+    """>= 90% of ENCODE's 2025 chr22 FDR 0.001 peaks overlap ours; hotspots are reported."""
+    calls = run / f"{sample}/hotspot3"
+    peaks = overlap(
+        calls / f"fdr0.001/{sample}.peaks.fdr0.001.bed.gz",
+        sample,
+        "peaks.fdr0.001",
+        tmp_path,
+    )
+    hotspots = overlap(
+        calls / f"fdr0.05/{sample}.hotspots.fdr0.05.bed.gz",
+        sample,
+        "hotspots.fdr0.05",
+        tmp_path,
+    )
+    print(
+        f"{sample}: FDR 0.001 peaks {peaks[0]} of {peaks[1]}, FDR 0.05 hotspots {hotspots[0]} of {hotspots[1]}"
+    )
+    assert peaks[0] >= 0.9 * peaks[1]

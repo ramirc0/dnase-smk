@@ -6,10 +6,16 @@ include: "rules/filter.smk"
 include: "rules/qc.smk"
 include: "rules/peaks.smk"
 include: "rules/footprints.smk"
+include: "rules/report.smk"
 
 
-def qc_files(sample):
-    """Return the QC files of a sample.
+# Seconds-long jobs, which would spend longer queued than running.
+localrules:
+    qc_summary,
+
+
+def deliverables(sample):
+    """Return the files `rule all` requests for a sample beyond the QC table.
 
     Parameters
     ----------
@@ -19,19 +25,21 @@ def qc_files(sample):
     Returns
     -------
     list of str
-        BAM stats and flagstats, bamcounts and preseq targets, plus insert
-        sizes for paired-end-only samples.
+        The nuclear BAM, hotspot3's calls and density, the footprints when
+        the sample's sheet rows allow them, and the insert size plot of a
+        paired-end-only sample.
     """
-    qc = prefix(sample, "qc")
-    files = [f"{qc}.{bam}.{ext}" for bam in BAMS for ext in ("stats.txt", "flagstat.json")]
-    files += [f"{qc}.bamcounts.txt", f"{qc}.preseq_targets.txt"]
+    files = [f"{prefix(sample, 'filter')}.nuclear.bam", f"{prefix(sample, 'hotspot3')}.normalized_density.bw"]
+    files += hotspot3_calls(sample)
+    if SAMPLES[sample]["footprints"]:
+        files += footprint_files(sample)
     if sample in PAIRED_ONLY:
-        files += [f"{qc}.insert_sizes.tsv", f"{qc}.insert_sizes.svg"]
+        files.append(f"{prefix(sample, 'qc')}.insert_sizes.svg")
     return files
 
 
 rule all:
     input:
-        [qc_files(s) for s in SAMPLES],
-        [hotspot3_calls(s) for s in SAMPLES],
-        [footprint_files(s) for s in SAMPLES if SAMPLES[s]["footprints"]],
+        f"{OUTDIR}/qc.tsv",
+        f"{OUTDIR}/qc.svg",
+        [deliverables(s) for s in SAMPLES],

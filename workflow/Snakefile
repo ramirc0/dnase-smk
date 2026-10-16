@@ -1,10 +1,9 @@
 
 include: "rules/common.smk"
 include: "rules/reference.smk"
+include: "rules/align.smk"
 
 
 rule all:
     input:
-        rules.reference.output,
-        rules.mappable_bases.output,
-        rules.bwa_mem3_index.output,
+        [f"{prefix(s, 'align')}.unfiltered.bam" for s in SAMPLES],

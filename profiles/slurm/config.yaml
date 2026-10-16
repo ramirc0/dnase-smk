@@ -26,8 +26,13 @@ default-resources:
 set-threads:              # single-threaded rules get the default, 1
   mappable_bases: 4
   bwa_mem3_index: 32
+  align: 32
 
 set-resources:              # tune from benchmarks/ TSVs after a real run
+  align:
+    slurm_partition: 12hours
+    mem_mb: 32000 * attempt
+    runtime: 720m
   bwa_mem3_index:
     slurm_partition: 12hours
     mem_mb: 96000 * attempt

@@ -27,6 +27,7 @@ set-threads:              # single-threaded rules get the default, 1
   mappable_bases: 4
   bwa_mem3_index: 32
   align: 32
+  filter: 16
 
 set-resources:              # tune from benchmarks/ TSVs after a real run
   align:
@@ -36,6 +37,10 @@ set-resources:              # tune from benchmarks/ TSVs after a real run
   bwa_mem3_index:
     slurm_partition: 12hours
     mem_mb: 96000 * attempt
+    runtime: 720m
+  filter:
+    slurm_partition: 12hours
+    mem_mb: 32000 * attempt
     runtime: 720m
 
   # GPU rule pattern (uncomment + adapt for a CUDA rule):

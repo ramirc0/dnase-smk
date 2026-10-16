@@ -21,7 +21,9 @@ set-threads:                # single-threaded rules get the default, 1
   mappable_bases: 4
   bwa_mem3_index: 32
   align: 32
+  filter: 16
 
 set-resources:              # tune from benchmarks/ TSVs after a real run
   align: {mem_mb: 32000}
+  filter: {mem_mb: 32000}
   bwa_mem3_index: {mem_mb: 96000}

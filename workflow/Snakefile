@@ -2,8 +2,9 @@
 include: "rules/common.smk"
 include: "rules/reference.smk"
 include: "rules/align.smk"
+include: "rules/filter.smk"
 
 
 rule all:
     input:
-        [f"{prefix(s, 'align')}.unfiltered.bam" for s in SAMPLES],
+        [f"{prefix(s, 'filter')}.nuclear.bam" for s in SAMPLES],

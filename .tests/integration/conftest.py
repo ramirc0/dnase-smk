@@ -36,6 +36,7 @@ SHEET = pl.read_csv(
 LAYOUTS = sorted(
     {(r["sample_id"], "pe" if r["r2"] else "se") for r in SHEET.iter_rows(named=True)}
 )
+SAMPLES = sorted({sample for sample, _ in LAYOUTS})
 
 
 def lanes(sample, layout):

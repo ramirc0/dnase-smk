@@ -1,0 +1,113 @@
+# ENCODE DNase-seq v3 QC of the validation replicates, fetched 2026-10-16 from the ENCODE portal:
+# quality_metrics of the v3 unfiltered and nuclear BAMs, with the preseq and insert size attachments.
+sample	section	metric	value
+UHT_rep1	flagstat.unfiltered	total	130469482
+UHT_rep1	flagstat.unfiltered	total_qc_failed	0
+UHT_rep1	flagstat.unfiltered	mapped	125628395
+UHT_rep1	flagstat.unfiltered	paired	130469482
+UHT_rep1	flagstat.unfiltered	paired_properly	32658230
+UHT_rep1	flagstat.unfiltered	duplicates	0
+UHT_rep1	flagstat.unfiltered	singletons	1062065
+UHT_rep1	duplicates	Unpaired Reads Examined	1062127
+UHT_rep1	duplicates	Read Pairs Examined	62283134
+UHT_rep1	duplicates	Unpaired Read Duplicates	651176
+UHT_rep1	duplicates	Read Pair Duplicates	26319503
+UHT_rep1	duplicates	Read Pair Optical Duplicates	160817
+UHT_rep1	duplicates	Percent Duplication	0.424189
+UHT_rep1	duplicates	Estimated Library Size	51143427
+UHT_rep1	preseq	preseq-est-for-20000000	29000000
+UHT_rep1	preseq	preseq-est-for-30000000	55000000
+UHT_rep1	preseq	preseq-est-for-40000000	99000000
+UHT_rep1	preseq	preseq-est-max	68194115
+UHT_rep1	insert_sizes	MEDIAN_INSERT_SIZE	65
+UHT_rep1	insert_sizes	MEAN_INSERT_SIZE	68.687076
+UHT_rep1	insert_sizes	STANDARD_DEVIATION	24.847697
+UHT_rep1	insert_sizes	READ_PAIRS	29763243
+UHT_rep1	flagstat.nuclear	total	108453374
+UHT_rep1	flagstat.nuclear	total_qc_failed	0
+UHT_rep1	flagstat.nuclear	mapped	108453374
+UHT_rep1	flagstat.nuclear	paired	108453374
+UHT_rep1	flagstat.nuclear	paired_properly	108453374
+UHT_rep1	flagstat.nuclear	duplicates	48926764
+UHT_rep1	flagstat.nuclear	singletons	0
+UHT_rep1	hotspot1	SPOT1	0.3313
+IEA_rep1	flagstat.unfiltered	total	250432886
+IEA_rep1	flagstat.unfiltered	total_qc_failed	0
+IEA_rep1	flagstat.unfiltered	mapped	246565092
+IEA_rep1	flagstat.unfiltered	paired	236918570
+IEA_rep1	flagstat.unfiltered	paired_properly	221394402
+IEA_rep1	flagstat.unfiltered	duplicates	0
+IEA_rep1	flagstat.unfiltered	singletons	1772840
+IEA_rep1	hotspot1	SPOT1	0.5232
+IEA_rep1	flagstat.nuclear	total	201281697
+IEA_rep1	flagstat.nuclear	total_qc_failed	0
+IEA_rep1	flagstat.nuclear	mapped	201281697
+IEA_rep1	flagstat.nuclear	paired	190291250
+IEA_rep1	flagstat.nuclear	paired_properly	190291250
+IEA_rep1	flagstat.nuclear	duplicates	31354860
+IEA_rep1	flagstat.nuclear	singletons	0
+IEA_rep1	duplicates	Unpaired Reads Examined	15188758
+IEA_rep1	duplicates	Read Pairs Examined	115688167
+IEA_rep1	duplicates	Unpaired Read Duplicates	7733659
+IEA_rep1	duplicates	Read Pair Duplicates	18237676
+IEA_rep1	duplicates	Read Pair Optical Duplicates	0
+IEA_rep1	duplicates	Percent Duplication	0.1793
+IEA_rep1	duplicates	Estimated Library Size	327254661
+IEA_rep1	preseq	preseq-est-for-20000000	21000000
+IEA_rep1	preseq	preseq-est-for-30000000	32000000
+IEA_rep1	preseq	preseq-est-for-40000000	43000000
+IEA_rep1	preseq	preseq-est-for-100000000	117000000
+IEA_rep1	preseq	preseq-est-for-150000000	188000000
+IEA_rep1	preseq	preseq-est-for-250000000	362000000
+IEA_rep1	preseq	preseq-est-max	464235721
+IEA_rep2	flagstat.unfiltered	total	121001937
+IEA_rep2	flagstat.unfiltered	total_qc_failed	0
+IEA_rep2	flagstat.unfiltered	mapped	101135603
+IEA_rep2	flagstat.unfiltered	paired	119488444
+IEA_rep2	flagstat.unfiltered	paired_properly	90600942
+IEA_rep2	flagstat.unfiltered	duplicates	0
+IEA_rep2	flagstat.unfiltered	singletons	3975899
+IEA_rep2	duplicates	Unpaired Reads Examined	5254073
+IEA_rep2	duplicates	Read Pairs Examined	47940765
+IEA_rep2	duplicates	Unpaired Read Duplicates	1953065
+IEA_rep2	duplicates	Read Pair Duplicates	3959747
+IEA_rep2	duplicates	Read Pair Optical Duplicates	0
+IEA_rep2	duplicates	Percent Duplication	0.097617
+IEA_rep2	duplicates	Estimated Library Size	273999575
+IEA_rep2	preseq	preseq-est-for-20000000	21000000
+IEA_rep2	preseq	preseq-est-for-30000000	32000000
+IEA_rep2	preseq	preseq-est-for-40000000	43000000
+IEA_rep2	preseq	preseq-est-for-100000000	111000000
+IEA_rep2	preseq	preseq-est-for-150000000	171000000
+IEA_rep2	preseq	preseq-est-for-250000000	301000000
+IEA_rep2	preseq	preseq-est-max	672616762
+IEA_rep2	flagstat.nuclear	total	79948640
+IEA_rep2	flagstat.nuclear	total_qc_failed	0
+IEA_rep2	flagstat.nuclear	mapped	79948640
+IEA_rep2	flagstat.nuclear	paired	78903404
+IEA_rep2	flagstat.nuclear	paired_properly	78903404
+IEA_rep2	flagstat.nuclear	duplicates	4393393
+IEA_rep2	flagstat.nuclear	singletons	0
+IEA_rep2	hotspot1	SPOT1	0.4953
+RWU_rep1	flagstat.unfiltered	total	60891149
+RWU_rep1	flagstat.unfiltered	total_qc_failed	0
+RWU_rep1	flagstat.unfiltered	mapped	51207552
+RWU_rep1	flagstat.unfiltered	duplicates	0
+RWU_rep1	duplicates	Unpaired Reads Examined	51207552
+RWU_rep1	duplicates	Read Pairs Examined	0
+RWU_rep1	duplicates	Unpaired Read Duplicates	6133560
+RWU_rep1	duplicates	Read Pair Duplicates	0
+RWU_rep1	duplicates	Read Pair Optical Duplicates	0
+RWU_rep1	duplicates	Percent Duplication	0.119778
+RWU_rep1	flagstat.nuclear	total	42068905
+RWU_rep1	flagstat.nuclear	total_qc_failed	0
+RWU_rep1	flagstat.nuclear	mapped	42068905
+RWU_rep1	flagstat.nuclear	duplicates	2761949
+RWU_rep1	preseq	preseq-est-for-20000000	22000000
+RWU_rep1	preseq	preseq-est-for-30000000	33000000
+RWU_rep1	preseq	preseq-est-for-40000000	44000000
+RWU_rep1	preseq	preseq-est-for-100000000	119000000
+RWU_rep1	preseq	preseq-est-for-150000000	189000000
+RWU_rep1	preseq	preseq-est-for-250000000	352000000
+RWU_rep1	preseq	preseq-est-max	516230187
+RWU_rep1	hotspot1	SPOT1	0.2533

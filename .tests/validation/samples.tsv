@@ -1,0 +1,14 @@
+# Four ENCODE DNase-seq replicates on GRCh38, compared with ENCODE's QC and 2025 calls by compare_encode.py.
+# Raw FASTQs from .tests/download.sh. Adapters are those of ENCODE's trimming reports.
+sample_id	r1	r2	adapter_r1	adapter_r2	read_length	preseq_defects	footprints
+UHT_rep1	/data/zusers/ramirezc/dnase-smk-refs/fastq/ENCFF201UOC.fastq.gz	/data/zusers/ramirezc/dnase-smk-refs/fastq/ENCFF149BGS.fastq.gz	AGATCGGAAGAGCACACGTCTGAACTCCAGTCACCTCTCTACATCTCGTATGCCGTCTTCTGCTTG	AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGTAGAGGATAGTGTAGATCTCGGTGGTCGCCGTATCATT	76		
+UHT_rep1	/data/zusers/ramirezc/dnase-smk-refs/fastq/ENCFF752UBC.fastq.gz	/data/zusers/ramirezc/dnase-smk-refs/fastq/ENCFF559DWT.fastq.gz	AGATCGGAAGAGCACACGTCTGAACTCCAGTCACCTCTCTACATCTCGTATGCCGTCTTCTGCTTG	AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGTAGAGGATAGTGTAGATCTCGGTGGTCGCCGTATCATT	76		
+IEA_rep1	/data/zusers/ramirezc/dnase-smk-refs/fastq/ENCFF178WLB.fastq.gz	/data/zusers/ramirezc/dnase-smk-refs/fastq/ENCFF645INN.fastq.gz	AGATCGGAAGAGCACACGTCTGAACTCCAGTCACTGTTGCATCTCGTATGCCGTCTTCTGCTTG	AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGTAGATCTCGGTGGTCGCCGTATCATT	36		
+IEA_rep1	/data/zusers/ramirezc/dnase-smk-refs/fastq/ENCFF377AOZ.fastq.gz	/data/zusers/ramirezc/dnase-smk-refs/fastq/ENCFF536KHM.fastq.gz	AGATCGGAAGAGCACACGTCTGAACTCCAGTCACTGTTGCATCTCGTATGCCGTCTTCTGCTTG	AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGTAGATCTCGGTGGTCGCCGTATCATT	36		
+IEA_rep1	/data/zusers/ramirezc/dnase-smk-refs/fastq/ENCFF665FKP.fastq.gz	/data/zusers/ramirezc/dnase-smk-refs/fastq/ENCFF580MND.fastq.gz	AGATCGGAAGAGCACACGTCTGAACTCCAGTCACTGTTGCATCTCGTATGCCGTCTTCTGCTTG	AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGTAGATCTCGGTGGTCGCCGTATCATT	36		
+IEA_rep1	/data/zusers/ramirezc/dnase-smk-refs/fastq/ENCFF901FSW.fastq.gz	/data/zusers/ramirezc/dnase-smk-refs/fastq/ENCFF719IMH.fastq.gz	AGATCGGAAGAGCACACGTCTGAACTCCAGTCACTGTTGCATCTCGTATGCCGTCTTCTGCTTG	AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGTAGATCTCGGTGGTCGCCGTATCATT	36		
+IEA_rep1	/data/zusers/ramirezc/dnase-smk-refs/fastq/ENCFF302JOP.fastq.gz				36		
+IEA_rep2	/data/zusers/ramirezc/dnase-smk-refs/fastq/ENCFF266WWA.fastq.gz	/data/zusers/ramirezc/dnase-smk-refs/fastq/ENCFF314WHE.fastq.gz	AGATCGGAAGAGCACACGTCTGAACTCCAGTCACATTCCTATCTCGTATGCCGTCTTCTGCTTG	AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGTAGATCTCGGTGGTCGCCGTATCATT	36		
+IEA_rep2	/data/zusers/ramirezc/dnase-smk-refs/fastq/ENCFF355JSW.fastq.gz				36		
+RWU_rep1	/data/zusers/ramirezc/dnase-smk-refs/fastq/ENCFF002DYE.fastq.gz				36	true	
+RWU_rep1	/data/zusers/ramirezc/dnase-smk-refs/fastq/ENCFF002DYD.fastq.gz				36	true	

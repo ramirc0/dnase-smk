@@ -35,9 +35,9 @@ set-threads:              # single-threaded rules get the default, 1
   footprints: 16
 
 set-resources:              # tune from benchmarks/ TSVs after a real run
-  align:
+  align:                    # bwa-mem3 peaked at 34 GB on GRCh38
     slurm_partition: 12hours
-    mem_mb: 32000 * attempt
+    mem_mb: 64000 * attempt
     runtime: 720m
   bwa_mem3_index:
     slurm_partition: 12hours

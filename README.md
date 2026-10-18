@@ -97,6 +97,24 @@ pixi run --manifest-path workflow/envs/pixi.toml -e test \
     python .tests/validation/compare_encode.py results/encode-validation
 ```
 
+Against ENCODE's 2025 files, the share of ENCODE's calls that overlap ours, and the
+Pearson correlation of log1p normalized density in 1 kb bins:
+
+| Replicate | Hotspots, FDR 0.05 | Peaks, FDR 0.001 | Footprints, FDR 0.001 | Density |
+|---|---|---|---|---|
+| ENCSR693UHT rep1 | 97.3% | 98.0% | 92.8% | 0.996 |
+| ENCSR426IEA rep1 | 95.9% | 97.8% | 93.3% | 0.998 |
+| ENCSR426IEA rep2 | 94.7% | 97.8% | no ENCODE file | 0.997 |
+| ENCSR420RWU rep1 | 92.2% | 94.9% | no ENCODE file | 0.997 |
+
+Call counts lie within 4% of ENCODE's. Against ENCODE's v3 QC, nuclear read
+counts lie within 3%, and preseq targets within 2% up to 150M reads. UHT's
+median insert size is equal, and its mean within 0.2%. The duplicate fraction of
+UHT and RWU is within 0.001 of ENCODE's. IEA's is lower: 0.161 against 0.179 in
+rep1, and 0.083 against 0.098 in rep2. On the fixture, samtools and Picard mark
+the same duplicates in one BAM, so the gap most likely comes from where
+bwa-mem3 and `aln` place reads. The cause is not yet shown.
+
 ## Inputs
 
 The sample sheet is a TSV with one row per FASTQ or FASTQ pair. Rows that share
@@ -257,6 +275,9 @@ where listed here. Figures are from the chr22 fixture.
   Median and MAD match. Mean and SD agree within 0.01%. There is no PDF.
 - preseq 3.2.0 replaces 2.0.3. Its curve lies within 0.2% of 2.0.3's up to 10
   times the observed depth, and the targets match.
+- The preseq targets skip `nan` rows, which `-defects` can write past some depth.
+  stampipes' awk took them as larger than every target. In defects mode, the
+  250M target and the maximum still move with the curve's tail.
 - hotspot3 1.0.1 replaces hotspot1 and hotspot2, as in ENCPL336PGV. There is no
   SPOT1 or SPOT2. `qc.tsv` reports hotspot3's SPOT and its SD, which do not
   compare with either. There are no narrowPeak, allcalls or starch files.

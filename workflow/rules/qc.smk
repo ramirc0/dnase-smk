@@ -73,7 +73,8 @@ rule dup_hist:
 
 
 # The targets are stampipes' preseq_targets.sh: the first extrapolated depth with more
-# distinct reads than each target, then the most distinct reads.
+# distinct reads than each target, then the most distinct reads. Defects mode can write
+# nan past some depth, which stampipes' awk compares as a string above every target.
 rule preseq:
     input:
         rules.dup_hist.output,
@@ -97,10 +98,11 @@ rule preseq:
             -o {output.curve:q}
         for target in {params.targets}; do
             awk -v target="$target" \
-                'NR > 1 && $2 > target {{ printf "preseq-est-for-%d\t%d\n", target, $1; exit }}' \
+                'NR > 1 && $2 != "nan" && $2 > target {{ printf "preseq-est-for-%d\t%d\n", target, $1; exit }}' \
                 {output.curve:q}
         done > {output.targets:q}
-        awk 'END {{ printf "preseq-est-max\t%d\n", $2 }}' {output.curve:q} >> {output.targets:q}
+        awk 'NR > 1 && $2 != "nan" {{ max = $2 }} END {{ printf "preseq-est-max\t%d\n", max }}' {output.curve:q} \
+            >> {output.targets:q}
 
         sync {output:q}
         """

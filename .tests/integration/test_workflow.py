@@ -1,9 +1,10 @@
 """Check sheet validation and the shape of the job graph."""
 
+import math
 import re
 
 import pytest
-from conftest import CONFIG, ROOT, snakemake
+from conftest import CONFIG, ROOT, run_rule, snakemake
 
 HEADER = "sample_id\tr1\tr2\tadapter_r1\tadapter_r2\tread_length\tpreseq_defects\tfootprints\n"
 PE = "S\tr1.fastq.gz\tr2.fastq.gz\tACGT\tTTGA\t36\t\t\n"
@@ -117,3 +118,35 @@ def test_footprints_off(tmp_path):
     jobs = job_counts(done)
     assert jobs["dispersion_model"] == 1
     assert jobs["footprints"] == 1
+
+
+def test_preseq_targets_skip_nan(tmp_path):
+    """Targets and the maximum skip the NaN rows preseq writes in defects mode.
+
+    The histogram is ENCSR420RWU rep1's on GRCh38. Its defects-mode curve turns
+    to NaN past 41M reads, which stampipes' awk takes as above every target.
+    """
+    out = "results-fixture/fixture/RWU/qc/RWU"
+    done = run_rule(
+        tmp_path,
+        "preseq",
+        f"{out}.preseq_targets.txt",
+        {f"{out}.dup_hist.txt": ROOT / ".tests/integration/data/RWU_rep1.dup_hist.txt"},
+    )
+    assert done.returncode == 0, done.stderr[-2000:]
+    rows = [
+        r.split("\t")
+        for r in (tmp_path / f"{out}.preseq.txt").read_text().splitlines()[1:]
+    ]
+    distinct = {float(r[0]): float(r[1]) for r in rows}
+    assert any(map(math.isnan, distinct.values()))
+    targets = dict(
+        r.split("\t")
+        for r in (tmp_path / f"{out}.preseq_targets.txt").read_text().splitlines()
+    )
+    for label, depth in targets.items():
+        if label != "preseq-est-max":
+            target = int(label.removeprefix("preseq-est-for-"))
+            assert distinct[float(depth)] > target, label
+    finite = [v for v in distinct.values() if not math.isnan(v)]
+    assert int(targets["preseq-est-max"]) == int(finite[-1])

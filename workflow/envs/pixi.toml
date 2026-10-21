@@ -129,3 +129,12 @@ hotspot3 = { features = ["hotspot3"], no-default-feature = true }
 footprints = { features = ["footprints"], no-default-feature = true }
 preseq = { features = ["preseq"], no-default-feature = true }
 test = { features = ["test"] }
+
+[exclude-newer]
+ca-certificates = "0d"
+certifi = "0d"
+pip = "0d"
+
+[pypi-exclude-newer]
+certifi = "0d"
+pip = "0d"
